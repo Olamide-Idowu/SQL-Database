@@ -1,0 +1,89 @@
+------------------------------------------
+--DDL statement for table 'HR' database--
+--------------------------------------------
+
+CREATE TABLE EMPLOYEES (
+                            EMP_ID CHAR(9) NOT NULL, 
+                            F_NAME VARCHAR(15) NOT NULL,
+                            L_NAME VARCHAR(15) NOT NULL,
+                            SSN CHAR(9),
+                            B_DATE DATE,
+                            SEX CHAR,
+                            ADDRESS VARCHAR(30),
+                            JOB_ID CHAR(9),
+                            SALARY DECIMAL(10,2),
+                            MANAGER_ID CHAR(9),
+                            DEP_ID CHAR(9) NOT NULL,
+                            PRIMARY KEY (EMP_ID));
+                            
+  CREATE TABLE JOB_HISTORY (
+                            EMPL_ID CHAR(9) NOT NULL, 
+                            START_DATE DATE,
+                            JOBS_ID CHAR(9) NOT NULL,
+                            DEPT_ID CHAR(9),
+                            PRIMARY KEY (EMPL_ID,JOBS_ID));
+ 
+ CREATE TABLE JOBS (
+                            JOB_IDENT CHAR(9) NOT NULL, 
+                            JOB_TITLE VARCHAR(15) ,
+                            MIN_SALARY DECIMAL(10,2),
+                            MAX_SALARY DECIMAL(10,2),
+                            PRIMARY KEY (JOB_IDENT));
+
+CREATE TABLE DEPARTMENTS (
+                            DEPT_ID_DEP CHAR(9) NOT NULL, 
+                            DEP_NAME VARCHAR(15) ,
+                            MANAGER_ID CHAR(9),
+                            LOC_ID CHAR(9),
+                            PRIMARY KEY (DEPT_ID_DEP));
+
+CREATE TABLE LOCATIONS (
+                            LOCT_ID CHAR(9) NOT NULL,
+                            DEP_ID_LOC CHAR(9) NOT NULL,
+                            PRIMARY KEY (LOCT_ID,DEP_ID_LOC));
+                            
+select EMP_ID, F_NAME, L_NAME, ADDRESS from EMPLOYEES 
+           where ADDRESS like '%Elgin,IL%';
+select EMP_ID, F_NAME, L_NAME, B_DATE from EMPLOYEES
+          where B_DATE like '197%';
+select EMP_ID, F_NAME, L_NAME, SALARY, DEP_ID from EMPLOYEES
+          where DEP_ID = 5
+          and SALARY between 60000 and 70000;
+select EMP_ID, F_NAME, L_NAME, DEP_ID from EMPLOYEES 
+          ORDER BY DEP_ID;
+select F_NAME, L_NAME, DEP_ID from EMPLOYEES 
+          ORDER BY DEP_ID desc, L_NAME desc;
+select EMP_ID, F_NAME, L_NAME, DEP_ID from EMPLOYEES 
+          ORDER BY L_NAME desc;
+select DEP_ID, count (*) from EMPLOYEES 
+          GROUP BY DEP_ID;
+select DEP_ID, count(*), AVG(SALARY) from EMPLOYEES
+          GROUP BY DEP_ID;
+select E.EMP_ID, D.DEP_ID_DEP from 
+          EMPLOYEES E, DEPARTMENTS D
+          where E.DEP_ID = D.DEPT_ID_DEP;
+select EMPLOYEES.EMP_ID, DEPARTMENTS.DEPT_NAME
+         from EMPLOYEES E, DEPARTMENTS D
+         where E.DEP_ID = D.DEPT_ID_DEP;
+select * from employees, departments;          
+select * from employees, departments
+	where employees.DEP_ID = departments. DEPT_ID_DEP;
+select * from employees e, departments d
+	where e.DEP_ID = d.DEP_ID_DEP;
+select F_NAME, DEP_NAME from EMPLOYEES, DEPARTMENTS 
+where DEPT_ID_DEP = DEP_ID;
+ 
+SELECT E.F_NAME, E.L_NAME, E.DEP_ID, JH.START_DATE, JH.DEPT_ID
+FROM EMPLOYEES as E INNER JOIN JOB_HISTORY as JH
+ON E.DEP_ID = JH.DEPT_ID
+WHERE E.DEP_ID = '5';
+SELECT E.EMP_ID, E.F_NAME, E.L_NAME, E.DEP_ID, E.JOB_ID, JH.START_DATE, JH.DEPT_ID, JH.JOBS_ID, J.JOB_IDENT
+FROM EMPLOYEES as E 
+INNER JOIN JOBS AS J ON E.JOB_ID = J.JOB_IDENT
+INNER JOIN JOB_HISTORY AS JH ON E.DEP_ID = JH.DEPT_ID 
+WHERE E.DEP_ID = '5';
+SELECT E.EMP_ID, E.L_NAME, E.DEP_ID, D.DEPT_ID_DEP, D.DEP_NAME, E.B_DATE
+FROM EMPLOYEES AS E LEFT JOIN DEPARTMENTS AS D
+ON E.DEP_ID = D.DEPT_ID_DEP
+WHERE YEAR(E.B_DATE) < 1980;
+
